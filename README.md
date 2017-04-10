@@ -1,2 +1,3 @@
-# numerical
-Number related codes and algorithms
+# Numerical Analysis
+
+Numerical analysis related codes and algorithms.
