@@ -134,7 +134,6 @@ def cuda_factor(number, primes):
     device = cuda.get_current_device()
     ffactor = np.asarray([1])
     dfact = cuda.to_device(ffactor)
-    length = len(primes)
     d_primes = cuda.to_device(np.asarray(primes))
 
     tpb = 720
