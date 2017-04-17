@@ -2,7 +2,7 @@ from numbapro import cuda
 import numpy as np
 from timeit import default_timer as timer
 
-@cuda.autojit
+@cuda.jit
 def cu_fact(d_primes, number, ffactor):
     bx = cuda.blockIdx.x
     bw = cuda.blockDim.x
