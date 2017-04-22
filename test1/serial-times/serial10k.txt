@@ -1,0 +1,30 @@
+
+Time taken :  0.736262951451
+Factors 10000 =  [2, 5]
+
+Time taken :  0.733114147253
+Factors 10001 =  [73, 137]
+
+Time taken :  0.732574022344
+Factors 10002 =  [2, 3, 1667]
+
+Time taken :  0.729178890396
+Factors 10003 =  [7, 1429]
+
+Time taken :  0.734308580246
+Factors 10004 =  [2, 41, 61]
+
+Time taken :  0.731115727856
+Factors 10005 =  [3, 5, 23, 29]
+
+Time taken :  0.730500763787
+Factors 10006 =  [2, 5003]
+
+Time taken :  0.730728702486
+Factors 10007 =  [10007]
+
+Time taken :  0.732436745942
+Factors 10008 =  [2, 3, 139]
+
+Time taken :  0.731628910667
+Factors 10009 =  [10009]
