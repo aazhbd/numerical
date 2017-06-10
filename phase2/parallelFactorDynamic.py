@@ -1,0 +1,137 @@
+from numba import cuda
+import numpy as np
+from timeit import default_timer as timer
+
+import math
+from decimal import *
+
+
+@cuda.jit
+def cu_fact(d_primes, number, ffactor):
+    bx = cuda.blockIdx.x
+    bw = cuda.blockDim.x
+    tx = cuda.threadIdx.x
+    i = tx + bx * bw * 24
+
+    for j in xrange(0, 24):
+        if number % d_primes[i + cuda.blockDim.x * j] == 0:
+            ffactor[i + cuda.blockDim.x * j] = d_primes[i + cuda.blockDim.x * j]
+            return
+
+
+def cuda_factor(number, primes):
+    device = cuda.get_current_device()
+    ffactor = np.asarray([0]*len(primes))
+    dfact = cuda.to_device(ffactor)
+    d_primes = cuda.to_device(np.asarray(primes))
+
+    limit = len(primes)
+
+    print "limit = ", limit
+
+    getcontext().prec = 1000
+
+    l = Decimal(limit) / Decimal(24)
+
+    if l <= 1024:
+        tpb = l
+        bpg = 1
+    else:
+        tpb = 1024
+        bpg = Decimal(l) / Decimal(tpb)
+
+
+    #tpb = 720 can be at most 1024
+    #bpg = 334 can be anything
+
+    itpb = int(math.ceil(tpb))
+    ibpg = int(math.ceil(bpg))
+
+    print "tpb = ", itpb
+    print "bpg = ", ibpg
+
+    start = timer()
+    cu_fact[ibpg, itpb](d_primes, number, dfact)
+    total = timer() - start
+    print "Time taken : ", total
+    c = dfact.copy_to_host()
+    k = []
+    for d in c:
+        if int(d) != 0:
+            k.append(int(d))
+    return k
+
+
+
+class Factorization:
+    """ Factorization procedures """
+    number = 1
+    primes = []
+    facts = []
+
+    def setPrimes(self, n=99999999):
+        sieve = [True] * n
+        for i in xrange(3, int(n**0.5) + 1, 2):
+            if sieve[i]:
+                sieve[i * i::2 * i] = [False] * ((n - i * i - 1) / (2 * i) + 1)
+        self.primes = [2] + [i for i in xrange(3, n, 2) if sieve[i]]
+
+
+    def setFactsSerial(self):
+        """Serial procedure to set the factors"""
+        length = len(self.primes)
+        click.echo("Using total primes : " + str(length))
+        i = 0
+        while i < length and self.primes[i] * self.primes[i] < self.number:
+            while self.number % self.primes[i] == 0:
+                self.facts.append(self.primes[i])
+                self.number = self.number / self.primes[i]
+            i = i + 1
+
+        if self.number != 1:
+            self.facts.append(self.number)
+
+
+    def setFactors(self, number):
+        """Parallel procedure to set the factors"""
+        self.number = number
+        i = 0
+        while self.primes[i] * self.primes[i] < self.number:
+            i = i + 1
+        p = self.primes[:i]
+
+        self.facts = cuda_factor(self.number, p)
+
+        c = 1
+        for fact in self.facts:
+            c = c * fact
+
+        if c != self.number:
+            self.facts.append(self.number / c)
+
+
+    def getFactors(self):
+        return self.facts
+
+    def showFactors(self):
+        print "Factors " + str(self.number) + " = ", self.facts
+
+
+def main():
+    f = Factorization()
+    f.setPrimes()
+
+    f.setFactors(9999996000000319)
+    #f.setFactors(9999999999999999)
+    #f.setFactors(10403)
+    print f.getFactors()
+
+    # for num in range(1000000000000000, 1000000000000010):
+    #     f.setFactors(num)
+    #     f.showFactors()
+
+
+
+
+if __name__ == '__main__':
+    main()
