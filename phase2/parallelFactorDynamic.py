@@ -77,10 +77,11 @@ class Factorization:
         self.primes = [2] + [i for i in xrange(3, n, 2) if sieve[i]]
 
 
-    def setFactsSerial(self):
+    def setFactsSerial(self, number):
         """Serial procedure to set the factors"""
+        self.number = number
+
         length = len(self.primes)
-        click.echo("Using total primes : " + str(length))
         i = 0
         while i < length and self.primes[i] * self.primes[i] < self.number:
             while self.number % self.primes[i] == 0:
@@ -94,9 +95,11 @@ class Factorization:
 
     def setFactors(self, number):
         """Parallel procedure to set the factors"""
+        length = len(self.primes)
+
         self.number = number
         i = 0
-        while self.primes[i] * self.primes[i] < self.number:
+        while i < length and self.primes[i] * self.primes[i] < self.number:
             i = i + 1
         p = self.primes[:i]
 
@@ -107,7 +110,13 @@ class Factorization:
             c = c * fact
 
         if c != self.number:
-            self.facts.append(self.number / c)
+            num = self.number / c
+            for fact in self.facts:
+                while num % fact == 0:
+                    num = num / fact
+
+            if num != 1:
+                self.facts.append(num)
 
 
     def getFactors(self):
@@ -121,14 +130,16 @@ def main():
     f = Factorization()
     f.setPrimes()
 
-    f.setFactors(9999996000000319)
+    #f.setFactors(9999996000000319)
     #f.setFactors(9999999999999999)
     #f.setFactors(10403)
-    print f.getFactors()
+    #f.setFactsSerial(9999996000000319)
+    #f.showFactors()
 
-    # for num in range(1000000000000000, 1000000000000010):
-    #     f.setFactors(num)
-    #     f.showFactors()
+    for num in range(1000000000000000, 1000000000000010):
+        #f.setFactsSerial(num)
+        f.setFactors(num)
+        f.showFactors()
 
 
 
