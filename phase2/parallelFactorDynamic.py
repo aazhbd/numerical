@@ -93,15 +93,31 @@ class Factorization:
             self.facts.append(self.number)
 
 
+    def closestPrimeIndex(self, values, item):
+        low = 0
+        high = len(values) - 1
+
+        v = 0
+
+        while low <= high:
+            mid = int((low + high) / 2)
+            v = values[mid]
+
+            if item < v:
+                high = mid - 1
+            elif item > v:
+                low = mid + 1
+            else:
+                return mid
+
+        return mid
+
+
     def setFactors(self, number):
         """Parallel procedure to set the factors"""
-        length = len(self.primes)
-
         self.number = number
-        i = 0
-        while i < length and self.primes[i] * self.primes[i] < self.number:
-            i = i + 1
-        p = self.primes[:i]
+        length = len(self.primes)
+        p = self.primes[:self.closestPrimeIndex(self.primes, self.number**0.5)]
 
         self.facts = cuda_factor(self.number, p)
 
@@ -123,7 +139,7 @@ class Factorization:
         return self.facts
 
     def showFactors(self):
-        print "Factors " + str(self.number) + " = ", self.facts
+        print "Factors of " + str(self.number) + " = ", self.facts
 
 
 def main():
@@ -131,15 +147,15 @@ def main():
     f.setPrimes()
 
     #f.setFactors(9999996000000319)
-    #f.setFactors(9999999999999999)
+    f.setFactors(9999999999999999)
     #f.setFactors(10403)
     #f.setFactsSerial(9999996000000319)
-    #f.showFactors()
+    f.showFactors()
 
-    for num in range(1000000000000000, 1000000000000010):
-        #f.setFactsSerial(num)
-        f.setFactors(num)
-        f.showFactors()
+    # for num in range(1000000000000000, 1000000000000010):
+    #     #f.setFactsSerial(num)
+    #     f.setFactors(num)
+    #     f.showFactors()
 
 
 
