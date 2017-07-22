@@ -117,7 +117,7 @@ class Factorization:
         """Parallel procedure to set the factors"""
         self.number = number
         length = len(self.primes)
-        p = self.primes[:self.closestPrimeIndex(self.primes, self.number**0.5)]
+        p = self.primes[:self.closestPrimeIndex(self.primes, self.number**0.5) + 1]
 
         self.facts = cuda_factor(self.number, p)
 
