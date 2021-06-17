@@ -13,7 +13,7 @@ def cu_fact(d_primes, number, ffactor):
     tx = cuda.threadIdx.x
     i = tx + bx * bw * 24
 
-    for j in xrange(0, 24):
+    for j in range(0, 24):
         if number % d_primes[i + cuda.blockDim.x * j] == 0:
             ffactor[i + cuda.blockDim.x * j] = d_primes[i + cuda.blockDim.x * j]
             return
@@ -27,7 +27,7 @@ def cuda_factor(number, primes):
 
     limit = len(primes)
 
-    print "limit = ", limit
+    print("limit = ", limit)
 
     getcontext().prec = 1000
 
@@ -47,13 +47,13 @@ def cuda_factor(number, primes):
     itpb = int(math.ceil(tpb))
     ibpg = int(math.ceil(bpg))
 
-    print "tpb = ", itpb
-    print "bpg = ", ibpg
+    print("tpb = ", itpb)
+    print("bpg = ", ibpg)
 
     start = timer()
     cu_fact[ibpg, itpb](d_primes, number, dfact)
     total = timer() - start
-    print "Time taken : ", total
+    print("Time taken : ", total)
     c = dfact.copy_to_host()
     k = []
     for d in c:
@@ -71,10 +71,10 @@ class Factorization:
 
     def setPrimes(self, n=99999999):
         sieve = [True] * n
-        for i in xrange(3, int(n**0.5) + 1, 2):
+        for i in range(3, int(n**0.5) + 1, 2):
             if sieve[i]:
-                sieve[i * i::2 * i] = [False] * ((n - i * i - 1) / (2 * i) + 1)
-        self.primes = [2] + [i for i in xrange(3, n, 2) if sieve[i]]
+                sieve[i * i::2 * i] = [False] * int((n - i * i - 1) / (2 * i) + 1)
+        self.primes = [2] + [i for i in range(3, n, 2) if sieve[i]]
 
 
     def setFactsSerial(self, number):
@@ -139,7 +139,7 @@ class Factorization:
         return self.facts
 
     def showFactors(self):
-        print "Factors of " + str(self.number) + " = ", self.facts
+        print("Factors of " + str(self.number) + " = ", self.facts)
 
 
 def main():
