@@ -1,0 +1,8 @@
+[package]
+name = "aks_rust"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rug = "1.26"
+rayon = "1.10"
